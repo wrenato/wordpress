@@ -1,0 +1,93 @@
+SELECT p.ID, post_status, p.post_title, pm.*
+FROM bd_posts p
+LEFT JOIN bd_postmeta pm ON p.ID = pm.post_id
+    AND pm.meta_key = null
+WHERE p.post_type IN ( 'product' );
+ 
+ 
+SELECT
+    `bd_posts`.`post_title` AS `post_title`,
+    `bd_posts`.`post_name` AS `post_name`,
+    `bd_postmeta`.`meta_value` AS `meta_value`,
+    `bd_posts`.`ID` AS `ID`
+FROM
+    (
+        `bd_posts`
+        JOIN `bd_postmeta` ON (
+            (
+                `bd_posts`.`ID` = `bd_postmeta`.`post_id`
+            )
+        )
+    )
+WHERE
+    (
+        (
+            `bd_posts`.`post_type` = 'product'
+        )
+        AND (
+            `bd_postmeta`.`meta_key` = '_sku'
+        )
+    )
+ORDER BY
+    `bd_postmeta`.`meta_value`;
+
+    
+    select bd_postmeta, bd_posts from bd_posts where ID='34536' or ID='30352';
+
+
+SELECT 
+    *
+FROM
+    `bd_posts`
+WHERE
+    id NOT IN (SELECT 
+            post_id
+        FROM
+            `bd_postmeta`
+        WHERE
+            `meta_key` = '_thumbnail_id')
+        AND `post_type` = 'product'
+        AND `post_status` = 'publish';
+        
+      
+update bd_posts set post_status='draft' where ID='30052';      
+	
+    
+update bd_posts set post_status='draft' WHERE
+    id NOT IN (SELECT 
+            post_id
+        FROM
+            `bd_postmeta`
+        WHERE
+            `meta_key` = '_thumbnail_id')
+        AND `post_type` = 'product'
+        AND `post_status` = 'publish';
+        
+        SELECT *
+FROM bd_posts p
+INNER JOIN  bd_postmeta pm ON p.ID = pm.post_id
+WHERE ID NOT IN (SELECT post_id FROM bd_postmeta WHERE meta_key = '_thumbnail_id')
+AND p.post_type = 'product'
+AND p.post_status = 'publish'
+AND pm.meta_key = '_stock_status'
+AND pm.meta_value = 'instock';
+        
+   
+    select ID, post_title,post_status,guid FROM
+    (
+        `bd_posts`
+        JOIN `bd_postmeta` ON (
+            (
+                `bd_posts`.`ID` = `bd_postmeta`.`post_id`
+            )
+        )
+    )
+WHERE
+    (
+        (
+            `bd_posts`.`post_type` = 'product'
+        )
+        AND (
+            `bd_postmeta`.`meta_key` = '_sku'
+        )
+    );
