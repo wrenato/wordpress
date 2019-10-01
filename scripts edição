@@ -91,3 +91,13 @@ WHERE
             `bd_postmeta`.`meta_key` = '_sku'
         )
     );
+
+update bd_posts set post_status='draft' WHERE
+    id NOT IN (SELECT 
+            post_id
+        FROM
+            `bd_postmeta`
+        WHERE
+            `meta_key` = '_thumbnail_id')
+        AND `post_type` = 'product'
+        AND `post_status` = 'publish';
