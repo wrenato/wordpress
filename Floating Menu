@@ -1,0 +1,42 @@
+/******************* Floating Menu - functions.php ****************/
+
+add_action( 'wp_footer', 'awd_add_floating_info');
+function awd_add_floating_info () { 
+?>
+<div class="sticky-slider">
+   <a href="https://www.teste.pt/"><i class="fas fa-comment-alt"></i></a><br>
+   <a href="https://www.teste.pt/"><i class="fas fa-globe-americas"></i></a><br>
+   <a href="https://www.teste.pt/" style="color:white;"><i class="fas fa-times"></i></a>
+</div>
+<?php 
+}
+
+/****************** Floating Menu - style.css ********************/
+.sticky-slider {
+  position: fixed;
+  bottom: 25%;
+  border: none;
+  border-radius: 40px;
+  background-color: #B8CCC6;
+  color: #fff;
+  z-index: 10000;
+  box-shadow: 0 0 50px 0 rgba(0,0,0,.3);
+  padding: 20px;
+  margin: 1rem 0;
+  right: 0px;
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.sticky-slider a {
+  color: white;
+}
+.sticky-slider a:hover {
+  color: red;
+}
+
+@media only screen and (max-width: 600px) {
+  .sticky-slider {
+  padding: 15px;
+}
+}
