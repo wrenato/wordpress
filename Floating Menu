@@ -40,3 +40,42 @@ function awd_add_floating_info () {
   padding: 15px;
 }
 }
+
+
+/**************/
+/*
+// get the id of the post/page based on the request uri.
+$url = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+$post_id = url_to_postid($url);
+
+// the id of the specific page/post.
+//$specific_post_id = 107; 
+
+// check if the requested post id is identical to the specific post id.
+if ($slug == "blog") {
+
+add_action( 'wp_footer', 'awd_add_floating_info');
+function awd_add_floating_info () { 
+?>
+<div class="sticky-slider">
+   <a href="https://www.teste.pt/"><i class="fas fa-cat"></i></a>
+</div>
+<?php 
+}
+
+}
+
+if ($post_id == 1991 || $post_id == 57) {
+
+add_action( 'wp_footer', 'awd_add_floating_info');
+function awd_add_floating_info () { 
+?>
+<div class="sticky-slider">
+    <a href="https://www.teste.pt/"><i class="fas fa-bolt"></i></a>
+</div>
+<?php 
+}
+
+}
+*/
+/**************/
