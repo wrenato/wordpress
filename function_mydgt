@@ -1,0 +1,321 @@
+<?php
+/**
+ * Electro Child
+ *
+ * @package electro-child
+ */
+
+/**
+ * Include all your custom code here
+ */
+
+
+if ( !defined( 'ABSPATH' ) ) exit;
+
+// BEGIN ENQUEUE PARENT ACTION
+// AUTO GENERATED - Do not modify or remove comment markers above or below:
+
+if ( !function_exists( 'chld_thm_cfg_parent_css' ) ):
+    function chld_thm_cfg_parent_css() {
+        wp_enqueue_style( 'chld_thm_cfg_parent', trailingslashit( get_template_directory_uri() ) . 'style.css', array(  ) );
+    }
+endif;
+add_action( 'wp_enqueue_scripts', 'chld_thm_cfg_parent_css', 10 );
+
+// END ENQUEUE PARENT ACTION
+
+// EXIBIR CUPOM NO EMAIL DE CONFIRMAÇÃO DE ENCOMENTADA E EMAIL DE ADMIN
+
+add_action( 'woocommerce_email_after_order_table', 'add_payment_method_to_admin_new_order', 15, 2 );
+
+/**
+ * Add used coupons to the order confirmation email
+*/
+
+function add_payment_method_to_admin_new_order( $order, $is_admin_email ) {
+	if ( $is_admin_email ) {
+		if( $order->get_used_coupons() ) {
+			$coupons_count = count( $order->get_used_coupons() );
+		    $i = 1;
+		    $coupons_list = '';
+		    foreach( $order->get_used_coupons() as $coupon) {
+		        $coupons_list .=  $coupon;
+		        if( $i < $coupons_count )
+		        	$coupons_list .= ', ';
+		        $i++;
+		    }
+		      echo '<p><strong>Código promocional:</strong> ' . $coupons_list . '</p>';
+		} // endif get_used_coupons
+	} // endif $is_admin_email
+}
+
+/* ALTERAR OS CAMPOS DO CHECKOUT */
+add_filter( 'woocommerce_billing_fields', 'custom_woocommerce_billing_fields' );
+
+function custom_woocommerce_billing_fields( $fields ) {
+
+   // Over-ride a single label
+   $fields['billing_first_name']['label'] = 'Nome';
+   $fields['billing_last_name']['label'] = 'Apelido';
+   /*$fields['billing_company']['label'] = 'Empresa';*/
+   $fields['billing_phone']['label'] = 'Telefone';
+   $fields['billing_email']['label'] = 'E-mail';
+   /*$fields['billing_postcode']['label'] = 'Código Postal';*/
+   
+   // Over-ride a single required value
+   //$fields['billing_email']['required'] = false;
+
+   /**
+    * You can over-ride -  billing_first_name, billing_last_name, billing_company, billing_address_1, billing_address_2, billing_city, billing_postcode, billing_country, billing_state, billing_email, billing_phone
+    */
+   
+/* OCULTAR CAMPOS DESNECESSÁRIOS */
+    unset($fields['billing_company']);
+    /*unset($fields['billing_last_name']);*/
+    unset($fields['billing_address_1']);
+    unset($fields['billing_address_2']);
+    unset($fields['billing_city']);
+    unset($fields['billing_postcode']);
+    unset($fields['billing_country']);
+    unset($fields['billing_state']);
+    return $fields;
+}
+
+/* Checkbox to Hide/Show Checkout Field - WRENATO */
+//checkbox_trigger   -->   checkbox_ilha
+//new_billing_field   -->   billing_ilha
+/*
+add_action( 'woocommerce_before_checkout_form', 'conditionally_show_hide_checkout_field' );
+function conditionally_show_hide_checkout_field() {
+    ?>
+    <style>
+    p#billing_ilha_field.on { display:none !important; }
+    </style>
+
+    <script type="text/javascript">
+    jQuery(function($){
+        var a = 'input#checkbox_ilha',   b = '#billing_ilha_field'
+
+        $(a).change(function(){
+            if ( $(this).prop('checked') === true && $(b).hasClass('on') ) {
+                $(b).show(function(){
+                    $(b).css({'display':'none'}).removeClass('on').show();
+                });
+            }
+            else if ( $(this).prop('checked') !== true && ! $(b).hasClass('on') ) {
+                $(b).fadeOut(function(){
+                    $(b).addClass('on')
+                });
+                $(b+' input').val('');
+            }
+        });
+    });
+    </script>
+    <?php
+}
+
+add_filter( 'woocommerce_checkout_fields', 'add_custom_checkout_fields' );
+function add_custom_checkout_fields( $fields ) {
+
+    $fields['billing']['checkbox_ilha'] = array(
+        'type'      => 'checkbox',
+        'label'     => __('Envio para ilhas', 'woocommerce'),
+        'class'     => array('form-row-wide'),
+        'clear'     => true
+    );
+
+    $fields['billing']['billing_ilha'] = array(
+        'label'     => __('Qual a ilha?', 'woocommerce'),
+        'placeholder'   => _x('Ex: Ilha do Pico, Ilha da Madeira, ...', 'placeholder', 'woocommerce'),
+        'class'     => array('form-row-wide on'),
+        'clear'     => true
+        
+    );
+    return $fields;
+}
+*/
+/* Checkbox to Hide/Show Checkout Field - WRENATO */
+
+/* PREÇOS COM TEXTO */
+
+function bd_rrp_sale_price_html( $price, $product ) {
+ 
+  if ( $product->is_on_sale() ) :
+    $has_sale_text = array(
+    '<del>' => '<del>Antes: ',
+    /*'<ins>' => '<br>Só: <ins>'*/
+    );
+    $return_string = str_replace(array_keys( $has_sale_text ), array_values( $has_sale_text ), $price);
+ 
+  else :
+    $return_string = 'A partir de: ' . $price;
+  endif;
+ 
+  return $return_string;
+}
+add_filter( 'woocommerce_get_price_html', 'bd_rrp_sale_price_html', 100, 2 );
+
+/* Texto no preço de propmoção*/
+
+
+function bd_sale_price_html( $price, $product ) {
+  if ( $product->is_on_sale() ) :
+    $return_string = str_replace( '<ins>', '<ins>A partir de: ', $price);
+    return $return_string;
+  else :
+    return $price;
+  endif;
+}
+add_filter( 'woocommerce_get_price_html', 'bd_sale_price_html', 100, 2 );
+
+
+
+/*ADICIONAR AO CARRINHO PRODUTOS COM PREÇO ZERO*/
+
+function wpa_109409_is_purchasable( $purchasable, $product ){
+    if( $product->get_price() == 0 )
+        $purchasable = true;
+    return $purchasable;
+}
+add_filter( 'woocommerce_is_purchasable', 'wpa_109409_is_purchasable', 10, 2 );
+
+/*TEXTO EM VEZ DE PREÇOS EM BRANCO*/
+/*
+add_filter('woocommerce_empty_price_html', 'custom_call_for_price');
+
+function custom_call_for_price() {
+     return 'Consulte-nos';
+}
+*/
+
+/* TEXTO PREÇOS EM BRANCO - PRODUTO VARIÁVEL */
+
+
+/* Make Variation Visible */
+add_filter('woocommerce_variation_is_visible', 'product_variation_always_shown', 10, 2);
+function product_variation_always_shown($is_visible, $id){
+    return true;
+}
+
+/* Display "Call for Price" instead of empty price */
+
+add_filter('woocommerce_empty_price_html', 'custom_call_for_price');
+add_filter('woocommerce_variable_empty_price_html', 'custom_call_for_price');
+add_filter('woocommerce_variation_empty_price_html', 'custom_call_for_price');
+function custom_call_for_price() {
+      return 'Consulte-nos';
+}
+
+
+/*TEXTO TRADUZIDO PARA OS TEXTOS DO CLIENTE*/
+
+add_filter('gettext', 'translate_text');
+add_filter('ngettext', 'translate_text');
+
+function translate_text($translated) {
+$translated = str_ireplace('Search', 'Pesquisar', $translated);
+$translated = str_ireplace('Finalizar Compra', 'Solicitar orçamento', $translated);
+$translated = str_ireplace('Notas da encomenda', 'Notas do pedido', $translated);
+$translated = str_ireplace('A sua encomenda', 'o seu pedido', $translated);
+$translated = str_ireplace('Confirmar encomenda', 'Solicitar orçamento', $translated);
+$translated = str_ireplace('Eu li e aceito os', 'Li e aceito os', $translated);
+$translated = str_ireplace('O seu pedido foi recebida', 'O seu pedido foi recebido', $translated);
+$translated = str_ireplace('Detalhes da encomenda', 'Detalhes do pedido', $translated);
+$translated = str_ireplace('Número de encomenda', 'Número de pedido', $translated);
+$translated = str_ireplace('No Results Found', 'Não se encontraram resultados.', $translated);
+$translated = str_ireplace('The page you requested could not be found. Try refining your Pesquisar, or use the navigation above to locate the post.', 'A página solicitada não foi encontrada. Tente refinar a sua pesquisa ou utilizar a navegação.', $translated);
+$translated = str_ireplace('Submit', 'Enviar', $translated);
+$translated = str_ireplace('Invalid email', 'E-mail inválido', $translated);
+$translated = str_ireplace('Please, fill in the following fields', 'Por favor preencha os seguintes campos em falta', $translated);
+$translated = str_ireplace('Please, fix the following errors', 'Por favor corrija os seguintes erros', $translated);
+$translated = str_ireplace('You entered the wrong number in captcha', 'O resultado que inseriu no Captcha não está certo', $translated);
+$translated = str_ireplace('Detalhes de facturação', 'Detalhes do pedido', $translated);
+$translated = str_ireplace('Morada de facturação', 'Detalhes do cliente', $translated);
+
+// - WRENATO
+
+$translated = str_ireplace('Availability', 'Disponibilidade', $translated);
+$translated = str_ireplace('Finalizar compras', 'Solicitar orçamento', $translated);
+$translated = str_ireplace('Your order', 'Seu pedido', $translated);
+$translated = str_ireplace('Sign Up', 'Subscrever', $translated);
+$translated = str_ireplace('Enter your email address', 'Insira o seu email', $translated);
+$translated = str_ireplace('Encomenda recebida', 'Orçamento solicitado', $translated);
+$translated = str_ireplace('Encomenda', 'Orçamento', $translated);
+$translated = str_ireplace('Encomendas', 'Orçamentos', $translated);
+$translated = str_ireplace('Leave a comment', 'Deixe um comentário', $translated);
+$translated = str_ireplace('Specification', 'Especificação', $translated);
+$translated = str_ireplace('Showing all', 'Mostrando os', $translated);
+$translated = str_ireplace('results', 'resultados', $translated);
+$translated = str_ireplace('Unable to find any products that match the current query', 'Não foi possível encontrar nenhum produto correspondente', $translated);
+$translated = str_ireplace('Show All Categories', 'Mostar todas as categorias', $translated);
+$translated = str_ireplace('No product categories exist', 'Não existem categorias de produtos', $translated);
+$translated = str_ireplace('Encomenda cancelada', 'Orçamento cancelado', $translated);
+$translated = str_ireplace('Reenviar notificação de nova Orçamento', 'Reenviar notificação de novo Orçamento', $translated);
+$translated = str_ireplace('Recebeu uma Orçamento ', 'Recebeu um Orçamento ', $translated);
+$translated = str_ireplace('A sua factura da Orçamento', 'Detalhamento do Orçamento', $translated);
+$translated = str_ireplace('Browse Categories', 'Categorias', $translated);
+$translated = str_ireplace('Read More', 'Ler Mais', $translated);
+$translated = str_ireplace('Returning Customer ?', 'Cliente de Regresso?', $translated);
+$translated = str_ireplace('Sign in', 'Aceder', $translated);
+$translated = str_ireplace("Don't have an account ?", "Não possui uma conta?", $translated);
+$translated = str_ireplace("Register", "Registar", $translated);
+$translated = str_ireplace("The minimum quantity of matching products for this coupon is", "A quantidade mínima de produtos correspondentes a este cupom é", $translated);
+$translated = str_ireplace("Show", "Mostrar", $translated);
+$translated = str_ireplace('Hurry Up! Offer ends in:', 'Apresse-se! A promoção termina em:', $translated);
+$translated = str_ireplace('Day', 'Dia', $translated);
+$translated = str_ireplace('Days', 'Dias', $translated);
+$translated = str_ireplace('Hours', 'Horas', $translated);
+$translated = str_ireplace('Secs', 'Segundos', $translated);
+$translated = str_ireplace("0.00", "Consulte-nos", $translated);
+$translated = str_ireplace("Notas do pedido", "Notas do pedido", $translated);
+$translated = str_ireplace('The minimum quantity of matching products for this coupon is', 'A quantidade mínima de produtos correspondentes a este código promocional é', $translated);
+$translated = str_ireplace('Código do cupão', 'Código Promocional', $translated);
+$translated = str_ireplace('Aplicar cupão', 'Aplicar Código', $translated);
+$translated = str_ireplace('Código de cupão', 'Código Promocional', $translated);
+$translated = str_ireplace('Cupão:', 'Código Promocional:', $translated);
+$translated = str_ireplace('Clique aqui e indique o código do seu cupão de desconto', 'Clique aqui e indique o código promocional', $translated);
+$translated = str_ireplace('Tem um cupão de desconto?', 'Tem um código promocional de desconto?', $translated);
+$translated = str_ireplace('Se tem um cupão de desconto', 'Se tem um código promocional de desconto', $translated);
+$translated = str_ireplace('On Sale Now', 'Promoções', $translated);
+$translated = str_ireplace('Product Categories', 'Categorias', $translated);
+$translated = str_ireplace('Popular Products', 'Produtos Populares', $translated);
+$translated = str_ireplace('Ignorar', 'Fechar', $translated);
+$translated = str_ireplace('New In Store', 'Produtos mais recentes', $translated);
+
+
+// - WRENATO
+
+// TESTE DE SCRIPT
+
+// FIM DO TESTE DE SCRIPT
+
+return $translated;
+}
+
+add_filter('ngettext_with_context', 'change_woocommerce_item_text', 20, 6);
+function change_woocommerce_item_text($translation, $single, $plural, $number, $context, $domain ) {
+    if ($domain == 'Divi') {
+		if ($translation == '%1$s Item') { return '%1$s Item'; }
+		if ($translation == '%1$s Items') { return '%1$s Items (Total)'; }
+    }
+    return $translation;
+}
+
+
+// AUMENTAR NÚMERO DE PRODUTOS EXIBIDOS POR PÁGINA
+
+/**
+ * @snippet       Products per Page - WooCommerce Shop
+ * @how-to        Watch tutorial @ https://businessbloomer.com/?p=19055
+ * @author        Rodolfo Melogli
+ * @compatible    WooCommerce 3.6.2
+ * @donate $9     https://businessbloomer.com/bloomer-armada/
+ */
+ /*
+add_filter( 'loop_shop_per_page', 'bbloomer_redefine_products_per_page', 9999 );
+ 
+function bbloomer_redefine_products_per_page( $per_page ) {
+  $per_page = 250;
+  return $per_page;
+}*/
+
