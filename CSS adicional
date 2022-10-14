@@ -1,0 +1,6 @@
+.product-img {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    aspect-ratio: 1/1;
+}
